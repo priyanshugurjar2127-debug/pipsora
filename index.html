@@ -2,106 +2,383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pipsora | Forex Trading</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #080d16;
-      color: #edf3fb;
-      padding: 24px;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #293447;
-      padding-bottom: 20px;
-    }
-    .logo { color: #62e6a6; font-size: 25px; font-weight: bold; }
-    .tag { color: #62e6a6; font-size: 12px; }
-    main { max-width: 1100px; margin: 35px auto; }
-    .card {
-      background: #111a28;
-      border: 1px solid #293447;
-      border-radius: 14px;
-      padding: 22px;
-      margin: 20px 0;
-    }
-    h1 { font-size: 36px; }
-    .muted { color: #91a0b5; }
-    .pair {
-      display: flex;
-      justify-content: space-between;
-      padding: 18px 0;
-      border-bottom: 1px solid #293447;
-    }
-    .price { color: #62e6a6; }
-    iframe { width: 100%; height: 450px; border: 0; }
-    @media(max-width:600px) {
-      body { padding: 12px; }
-      h1 { font-size: 29px; }
-      iframe { height: 380px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipsora — Pro Trading Terminal</title>
+<style>
+:root {
+  --bg:#080d14; --panel:#0e1622; --border:#202d3c;
+  --text:#e8eef7; --muted:#8190a5;
+  --green:#4be0a0; --red:#ff6878; --blue:#6c9cff;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--text);
+  font:14px Inter,Arial,sans-serif;
+}
+button,select,input { font:inherit; }
+button { cursor:pointer; }
+.topbar {
+  height:66px; display:flex; align-items:center;
+  justify-content:space-between; gap:18px;
+  padding:0 22px; background:#0b121c;
+  border-bottom:1px solid var(--border);
+}
+.brand { display:flex; align-items:center; gap:10px;
+  color:var(--green); font-size:21px; font-weight:800;
+  letter-spacing:1.5px; white-space:nowrap;
+}
+.brand-icon { font-size:27px; }
+.top-right { display:flex; align-items:center; gap:18px; }
+.status { color:var(--green); font-size:12px; }
+.demo {
+  padding:9px 13px; border-radius:7px;
+  background:#102b25; color:var(--green);
+  border:1px solid #245241; font-size:11px;
+  font-weight:bold; letter-spacing:1px;
+}
+.layout {
+  display:grid; grid-template-columns:220px minmax(0,1fr) 245px;
+  min-height:calc(100vh - 66px);
+}
+.sidebar,.rightbar { background:var(--panel); padding:18px 14px; }
+.sidebar { border-right:1px solid var(--border); }
+.rightbar { border-left:1px solid var(--border); }
+.section-label {
+  color:var(--muted); font-size:10px; letter-spacing:1.7px;
+  font-weight:700; margin:4px 0 16px;
+}
+.market-item {
+  width:100%; display:flex; justify-content:space-between;
+  align-items:center; gap:6px; padding:13px 9px;
+  border:1px solid transparent; border-radius:8px;
+  background:transparent; color:var(--text); text-align:left;
+  margin-bottom:4px;
+}
+.market-item:hover,.market-item.active {
+  background:#172535; border-color:#2b4055;
+}
+.pair-name { font-weight:700; font-size:12px; }
+.pair-sub { color:var(--muted); font-size:10px; margin-top:5px; }
+.pair-change { font-size:11px; white-space:nowrap; }
+.green { color:var(--green); }
+.red { color:var(--red); }
+.center { min-width:0; padding:18px; }
+.heading {
+  display:flex; justify-content:space-between;
+  align-items:center; gap:12px; margin-bottom:16px;
+}
+h1 { margin:0; font-size:24px; letter-spacing:-.5px; }
+.subtitle { color:var(--muted); font-size:12px; margin-top:6px; }
+.pair-chip {
+  border:1px solid var(--border); border-radius:8px;
+  padding:10px 12px; background:#101a28; white-space:nowrap;
+}
+.stats {
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px; margin-bottom:14px;
+}
+.stat {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:10px; padding:13px;
+}
+.stat-label { color:var(--muted); font-size:11px; }
+.stat-value { font-size:18px; font-weight:700; margin-top:8px; }
+.chart-panel {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:11px; overflow:hidden;
+}
+.chart-head {
+  padding:13px 15px; display:flex; justify-content:space-between;
+  align-items:center; gap:10px; border-bottom:1px solid var(--border);
+}
+.chart-title { font-weight:700; }
+.chart-note { color:var(--muted); font-size:11px; margin-top:4px; }
+#tradingview_chart { height: min(68vh,720px); min-height:480px; width:100%; }
+#tradingview_chart iframe { width:100%!important; }
+.chart-foot { padding:10px 14px; color:var(--muted); font-size:10px; }
+.account-card {
+  background:#14251f; border:1px solid #294b3d;
+  padding:15px; border-radius:10px; margin-bottom:24px;
+}
+.account-card .label { color:#a0b8ad; font-size:11px; }
+.balance { font-size:25px; font-weight:750; margin:9px 0; }
+.reset {
+  background:transparent; border:0; padding:0;
+  color:var(--green); font-size:11px;
+}
+.field { margin:15px 0; }
+.field label {
+  display:block; color:var(--muted); font-size:11px; margin-bottom:8px;
+}
+.field input,.field select {
+  width:100%; padding:11px; border-radius:7px;
+  background:#09111c; color:var(--text);
+  border:1px solid #2b394b; outline:none;
+}
+.actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.actions button {
+  border:0; border-radius:7px; padding:12px 4px;
+  font-weight:750; color:#07140f;
+}
+.buy { background:var(--green); }
+.sell { background:var(--red); }
+.notice {
+  font-size:10px; line-height:1.6; color:var(--muted);
+  margin-top:13px;
+}
+.toast {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:#172535; border:1px solid #30455c; color:var(--text);
+  padding:12px 18px; border-radius:8px; display:none; z-index:10;
+}
+@media(max-width:1050px) {
+  .layout { grid-template-columns:185px minmax(0,1fr); }
+  .rightbar { grid-column:1/-1; border-left:0;
+    border-top:1px solid var(--border); }
+  .rightbar-inner { max-width:650px; }
+  #tradingview_chart { height:65vh; }
+}
+@media(max-width:620px) {
+  .topbar { padding:0 13px; height:58px; }
+  .brand { font-size:18px; }
+  .top-right { gap:8px; }
+  .status { display:none; }
+  .layout { display:flex; flex-direction:column; }
+  .sidebar { border-right:0; border-bottom:1px solid var(--border); }
+  .sidebar .section-label { margin-bottom:10px; }
+  .market-list { display:flex; overflow-x:auto; gap:6px; }
+  .market-item { min-width:125px; width:auto; margin:0; }
+  .center { padding:12px; }
+  .heading { align-items:flex-start; }
+  h1 { font-size:21px; }
+  .pair-chip { font-size:11px; padding:8px; }
+  .stats { gap:6px; }
+  .stat { padding:10px 8px; }
+  .stat-label { font-size:9px; }
+  .stat-value { font-size:15px; }
+  #tradingview_chart { height:65vh; min-height:400px; }
+  .rightbar { padding:16px; }
+}
+</style>
 </head>
 <body>
-  <header>
-    <div class="logo">◆ PIPSORA</div>
-    <div class="tag">DEMO PLATFORM</div>
-  </header>
+<header class="topbar">
+  <div class="brand"><span class="brand-icon">◈</span>PIPSORA</div>
+  <div class="top-right">
+    <span class="status">● DEMO TERMINAL</span>
+    <span class="demo">PAPER TRADING</span>
+  </div>
+</header>
 
-  <main>
-    <p class="tag">TRADE SMART. THINK GLOBAL.</p>
-    <h1>Your Forex Trading Dashboard</h1>
-    <p class="muted">Explore currency markets with Pipsora.</p>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="section-label">MARKET WATCH</div>
+    <div class="market-list" id="marketList"></div>
+    <p class="notice">Prices shown in the watchlist are illustrative examples, not live quotes.</p>
+  </aside>
 
-    <section class="card">
-      <p class="muted">Virtual Demo Balance</p>
-      <h2 id="balance">$10,000.00</h2>
-      <button onclick="resetBalance()">Reset Demo Balance</button>
-    </section>
+  <main class="center">
+    <div class="heading">
+      <div>
+        <h1>Trading Terminal</h1>
+        <div class="subtitle">Your markets. Your strategy. One workspace.</div>
+      </div>
+      <div class="pair-chip" id="pairChip">EUR/USD</div>
+    </div>
 
-    <section class="card">
-      <h2>Popular Currency Pairs</h2>
-      <div class="pair"><b>EUR/USD</b><span class="price">TradingView chart</span></div>
-      <div class="pair"><b>GBP/USD</b><span class="price">TradingView chart</span></div>
-      <div class="pair"><b>USD/JPY</b><span class="price">TradingView chart</span></div>
-      <div class="pair"><b>AUD/USD</b><span class="price">TradingView chart</span></div>
-    </section>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">DEMO BALANCE</div>
+        <div class="stat-value" id="balanceStat">$10,000.00</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">ACCOUNT MODE</div>
+        <div class="stat-value green">Practice</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">MARKET DATA</div>
+        <div class="stat-value">Chart feed</div>
+      </div>
+    </div>
 
-    <section class="card">
-      <h2>Live Market Chart</h2>
-      <div class="tradingview-widget-container">
-        <div id="tradingview_chart"></div>
-        <script src="https://s3.tradingview.com/tv.js"></script>
-        <script>
-          new TradingView.widget({
-            autosize: true,
-            symbol: "FX:EURUSD",
-            interval: "60",
-            timezone: "Asia/Kolkata",
-            theme: "dark",
-            style: "1",
-            locale: "en",
-            enable_publishing: false,
-            hide_top_toolbar: false,
-            allow_symbol_change: true,
-            container_id: "tradingview_chart"
-          });
-        </script>
+    <section class="chart-panel">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title" id="chartPair">EUR/USD · Forex</div>
+          <div class="chart-note">Interactive TradingView chart</div>
+        </div>
+        <span class="status">● Chart</span>
+      </div>
+      <div id="tradingview_chart"></div>
+      <div class="chart-foot">
+        Market data availability and delays depend on TradingView and its data providers.
       </div>
     </section>
-    <p class="muted">Charts and market data are subject to TradingView widget availability. Demo balance is not a real account.</p>
   </main>
 
-  <script>
-    function resetBalance() {
-      document.getElementById("balance").textContent = "$10,000.00";
-    }
-  </script>
+  <aside class="rightbar">
+    <div class="rightbar-inner">
+      <div class="section-label">DEMO ACCOUNT</div>
+      <div class="account-card">
+        <div class="label">Virtual funds</div>
+        <div class="balance" id="balance">$10,000.00</div>
+        <button class="reset" onclick="resetDemo()">↻ Reset demo balance</button>
+      </div>
+
+      <div class="section-label">ORDER TICKET</div>
+      <div class="field">
+        <label>Selected instrument</label>
+        <select id="orderPair"></select>
+      </div>
+      <div class="field">
+        <label>Position size (demo units)</label>
+        <input id="units" type="number" min="1" max="100000" value="1000">
+      </div>
+      <div class="actions">
+        <button class="buy" onclick="placeDemoOrder('BUY')">BUY ↗</button>
+        <button class="sell" onclick="placeDemoOrder('SELL')">SELL ↘</button>
+      </div>
+      <p class="notice">
+        Demo interface only. Order buttons below record a simulated action; they do not execute real trades or calculate live profit/loss.
+      </p>
+    </div>
+  </aside>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const pairs = [
+  { name:"EUR/USD", symbol:"FX:EURUSD", change:"+0.24%", positive:true },
+  { name:"GBP/USD", symbol:"FX:GBPUSD", change:"+0.18%", positive:true },
+  { name:"USD/JPY", symbol:"FX:USDJPY", change:"-0.12%", positive:false },
+  { name:"AUD/USD", symbol:"FX:AUDUSD", change:"+0.09%", positive:true },
+  { name:"USD/CAD", symbol:"FX:USDCAD", change:"-0.07%", positive:false },
+  { name:"USD/CHF", symbol:"FX:USDCHF", change:"+0.04%", positive:true },
+  { name:"NZD/USD", symbol:"FX:NZDUSD", change:"-0.03%", positive:false }
+];
+
+let selected = pairs[0];
+let balance = 10000;
+let widgetReady = false;
+
+function renderPairs() {
+  const list = document.getElementById("marketList");
+  const select = document.getElementById("orderPair");
+  list.innerHTML = "";
+  select.innerHTML = "";
+
+  pairs.forEach(pair => {
+    const button = document.createElement("button");
+    button.className = "market-item" +
+      (pair.name === selected.name ? " active" : "");
+    button.innerHTML =
+      '<span><div class="pair-name">' + pair.name +
+      '</div><div class="pair-sub">Forex pair</div></span>' +
+      '<span class="pair-change ' +
+      (pair.positive ? "green" : "red") + '">' +
+      pair.change + '</span>';
+    button.onclick = () => selectPair(pair);
+    list.appendChild(button);
+
+    const option = document.createElement("option");
+    option.value = pair.name;
+    option.textContent = pair.name;
+    option.selected = pair.name === selected.name;
+    select.appendChild(option);
+  });
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(() => {
+    toast.style.display = "none";
+  }, 3000);
+}
+
+function loadChart(pair) {
+  selected = pair;
+  document.getElementById("pairChip").textContent = pair.name;
+  document.getElementById("chartPair").textContent =
+    pair.name + " · Forex";
+  document.getElementById("orderPair").value = pair.name;
+  renderPairs();
+
+  const container = document.getElementById("tradingview_chart");
+  container.innerHTML = "";
+
+  if (window.TradingView && window.TradingView.widget) {
+    new window.TradingView.widget({
+      autosize: true,
+      symbol: pair.symbol,
+      interval: "60",
+      timezone: "Asia/Kolkata",
+      theme: "dark",
+      style: "1",
+      locale: "en",
+      allow_symbol_change: true,
+      hide_side_toolbar: false,
+      withdateranges: true,
+      save_image: false,
+      container_id: "tradingview_chart"
+    });
+  } else {
+    container.innerHTML =
+      '<p style="padding:20px;color:#8190a5">Loading TradingView chart…</p>';
+  }
+}
+
+function selectPair(pair) {
+  loadChart(pair);
+}
+
+document.getElementById("orderPair").addEventListener("change", event => {
+  const pair = pairs.find(item => item.name === event.target.value);
+  if (pair) loadChart(pair);
+});
+
+function updateBalance() {
+  const value = "$" + balance.toLocaleString("en-US", {
+    minimumFractionDigits:2, maximumFractionDigits:2
+  });
+  document.getElementById("balance").textContent = value;
+  document.getElementById("balanceStat").textContent = value;
+}
+
+function resetDemo() {
+  balance = 10000;
+  updateBalance();
+  showToast("Demo balance reset to $10,000.");
+}
+
+function placeDemoOrder(side) {
+  const units = Number(document.getElementById("units").value);
+  if (!Number.isInteger(units) || units < 1 || units > 100000) {
+    showToast("Enter a demo size between 1 and 100,000.");
+    return;
+  }
+  showToast("Simulated " + side + " action for " + selected.name +
+    " · " + units.toLocaleString() + " units. No real trade placed.");
+}
+
+renderPairs();
+updateBalance();
+
+const tvScript = document.createElement("script");
+tvScript.src = "https://s3.tradingview.com/tv.js";
+tvScript.onload = () => {
+  widgetReady = true;
+  loadChart(selected);
+};
+tvScript.onerror = () => {
+  document.getElementById("tradingview_chart").innerHTML =
+    '<p style="padding:20px;color:#ff6878">Chart failed to load. Refresh the page or check the network.</p>';
+};
+document.head.appendChild(tvScript);
+</script>
 </body>
 </html>
