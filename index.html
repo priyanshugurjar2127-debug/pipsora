@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipsora | Forex Trading</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #080d16;
+      color: #edf3fb;
+      padding: 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #293447;
+      padding-bottom: 20px;
+    }
+    .logo { color: #62e6a6; font-size: 25px; font-weight: bold; }
+    .tag { color: #62e6a6; font-size: 12px; }
+    main { max-width: 1100px; margin: 35px auto; }
+    .card {
+      background: #111a28;
+      border: 1px solid #293447;
+      border-radius: 14px;
+      padding: 22px;
+      margin: 20px 0;
+    }
+    h1 { font-size: 36px; }
+    .muted { color: #91a0b5; }
+    .pair {
+      display: flex;
+      justify-content: space-between;
+      padding: 18px 0;
+      border-bottom: 1px solid #293447;
+    }
+    .price { color: #62e6a6; }
+    iframe { width: 100%; height: 450px; border: 0; }
+    @media(max-width:600px) {
+      body { padding: 12px; }
+      h1 { font-size: 29px; }
+      iframe { height: 380px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">◆ PIPSORA</div>
+    <div class="tag">DEMO PLATFORM</div>
+  </header>
+
+  <main>
+    <p class="tag">TRADE SMART. THINK GLOBAL.</p>
+    <h1>Your Forex Trading Dashboard</h1>
+    <p class="muted">Explore currency markets with Pipsora.</p>
+
+    <section class="card">
+      <p class="muted">Virtual Demo Balance</p>
+      <h2 id="balance">$10,000.00</h2>
+      <button onclick="resetBalance()">Reset Demo Balance</button>
+    </section>
+
+    <section class="card">
+      <h2>Popular Currency Pairs</h2>
+      <div class="pair"><b>EUR/USD</b><span class="price">TradingView chart</span></div>
+      <div class="pair"><b>GBP/USD</b><span class="price">TradingView chart</span></div>
+      <div class="pair"><b>USD/JPY</b><span class="price">TradingView chart</span></div>
+      <div class="pair"><b>AUD/USD</b><span class="price">TradingView chart</span></div>
+    </section>
+
+    <section class="card">
+      <h2>Live Market Chart</h2>
+      <div class="tradingview-widget-container">
+        <div id="tradingview_chart"></div>
+        <script src="https://s3.tradingview.com/tv.js"></script>
+        <script>
+          new TradingView.widget({
+            autosize: true,
+            symbol: "FX:EURUSD",
+            interval: "60",
+            timezone: "Asia/Kolkata",
+            theme: "dark",
+            style: "1",
+            locale: "en",
+            enable_publishing: false,
+            hide_top_toolbar: false,
+            allow_symbol_change: true,
+            container_id: "tradingview_chart"
+          });
+        </script>
+      </div>
+    </section>
+    <p class="muted">Charts and market data are subject to TradingView widget availability. Demo balance is not a real account.</p>
+  </main>
+
+  <script>
+    function resetBalance() {
+      document.getElementById("balance").textContent = "$10,000.00";
+    }
+  </script>
+</body>
+</html>
